@@ -8,8 +8,6 @@ static long long unsigned int difference;
 
 static FILE* f;
 
-static const int N = 100;
-
 void start_clock()
 {
     clock_gettime(CLOCK_REALTIME, &start);
@@ -78,13 +76,13 @@ void measure(unsigned int size)
 int main()
 {
     srand(time(NULL));
-    vectors(10);
-    matrix_vector(10);
+    vectors(100);
+    matrix_vector(100);
 
     f = fopen("results.csv", "w");
     fprintf(f, "size,vector_ns,matrix_ns\n");
 
-    for (int size = 10; size <= N; size += 5) {
+    for (int size = 10; size <= 100; size += 1) {
         for (int i = 0; i < 10; i++) {
             measure(size);
         }
