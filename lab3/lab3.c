@@ -41,24 +41,92 @@ void blas(unsigned int size)
     gsl_matrix_free(m2);
 }
 
+void naive(unsigned int size)
+{
+    int** m1 = malloc(size * sizeof(int*));
+    int** m2 = malloc(size * sizeof(int*));
+    int** m3 = malloc(size * sizeof(int*));
+    for (int i = 0; i < size; ++i) {
+        m1[i] = calloc(size, sizeof(int));
+        m2[i] = calloc(size, sizeof(int));
+        m3[i] = calloc(size, sizeof(int));
+    }
+
+    for (int i = 0; i < size; ++i) {
+        for (int j = 0; j < size; ++j) {
+            m1[i][j] = rand();
+            m2[i][j] = rand();
+        }
+    }
+
+    start_clock();
+    for (int j = 0; j < size; ++j) {
+        for (int k = 0; k < size; ++k) {
+            for (int i = 0; i < size; ++i) {
+                m3[i][j] += m1[i][k] * m2[k][j];
+            }
+        }
+    }
+    stop_clock();
+
+    free(m1);
+    free(m2);
+    free(m3);
+}
+
+void better(unsigned int size)
+{
+    int** m1 = malloc(size * sizeof(int*));
+    int** m2 = malloc(size * sizeof(int*));
+    int** m3 = malloc(size * sizeof(int*));
+    for (int i = 0; i < size; ++i) {
+        m1[i] = calloc(size, sizeof(int));
+        m2[i] = calloc(size, sizeof(int));
+        m3[i] = calloc(size, sizeof(int));
+    }
+
+    start_clock();
+    for (int i = 0; i < size; ++i) {
+        for (int k = 0; k < size; ++k) {
+            for (int j = 0; j < size; ++j) {
+                m3[i][j] += m1[i][k] * m2[k][j];
+            }
+        }
+    }
+    stop_clock();
+
+    free(m1);
+    free(m2);
+    free(m3);
+}
+
 void measure(unsigned int size)
 {
+
+    naive(size);
+    unsigned long long naive_time_ns = difference;
+
+    better(size);
+    unsigned long long better_time_ns = difference;
+
     blas(size);
     unsigned long long blas_time_ns = difference;
 
-    fprintf(f, "%d,%lld\n", size, blas_time_ns);
+    fprintf(f, "%d,%lld,%lld,%lld\n", size, naive_time_ns, better_time_ns, blas_time_ns);
 }
 
 int main()
 {
     srand(time(NULL));
-    blas(100);
+    naive(10);
+    better(10);
+    blas(10);
 
     f = fopen("results.csv", "w");
-    fprintf(f, "size,blas\n");
+    fprintf(f, "size,naive,better,blas\n");
 
-    for (int size = 10; size <= 100; size += 1) {
-        for (int i = 0; i < 10; i++) {
+    for (int size = 10; size <= 200; ++size) {
+        for (int i = 0; i < 10; ++i) {
             measure(size);
         }
     }
