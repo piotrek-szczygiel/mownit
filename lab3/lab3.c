@@ -1,3 +1,4 @@
+#define _XOPEN_SOURCE 500
 #include <gsl/gsl_blas.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -125,7 +126,7 @@ int main()
     f = fopen("results.csv", "w");
     fprintf(f, "size,naive,better,blas\n");
 
-    for (int size = 10; size <= 200; ++size) {
+    for (int size = 10; size <= 250; size += 10) {
         for (int i = 0; i < 10; ++i) {
             measure(size);
         }
